@@ -67,7 +67,7 @@ export const PopularCar = () => {
     ];
 
     return (
-        <main className="container mx-auto max-w-7xl py-20 px-6">
+        <main className="container mx-auto max-w-[1550px] py-20 px-6">
             <div className="flex flex-col gap-10">
                 <div className="flex justify-between">
                     <h1 className='text-[24px] font-semibold'>Популярні марки</h1>

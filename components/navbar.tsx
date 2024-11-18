@@ -14,7 +14,7 @@ import NextLink from "next/link";
 export const Navbar = () => {
 
     return (
-        <NextUINavbar maxWidth="xl" className="bg-[rgba(255,255,255,0.02)] py-4" position="sticky">
+        <NextUINavbar maxWidth="2xl" className="bg-[rgba(255,255,255,0.02)] py-4" position="sticky">
             <NavbarContent className="basis-1/5  sm:basis-full" justify="start">
                 <NavbarBrand as="li" className="gap-4 max-w-fit">
                     <NextLink className="flex justify-start items-center gap-1" href="/">
