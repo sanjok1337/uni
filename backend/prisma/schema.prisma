@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model car {
+  id        Int       @id @default(autoincrement())
+  make      String    @db.VarChar(255)
+  model     String    @db.VarChar(255)
+  year      Int
+  price     Float     @db.Float
+  createdAt DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model user {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique(map: "email") @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  createdAt DateTime? @default(now()) @db.Timestamp(0)
+}

@@ -1,31 +1,8 @@
 import "@/styles/globals.css";
-import { Metadata, Viewport } from "next";
-import { Link } from "@nextui-org/link";
-import clsx from "clsx";
-
-import { Providers } from "./providers";
-
-import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
-
-export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
-};
+import { fontSans } from "@/config/fonts";
+import clsx from "clsx";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
   children,
@@ -33,33 +10,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
-      <head />
-      <body
-        className={clsx(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-        )}
-      >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
-          <div className="relative flex flex-col h-screen">
-            <Navbar />
-            <main className=" flex-grow">
-              {children}
-            </main>
-            <footer className="w-full bg-white/5 flex items-center justify-center py-3">
-              <Link
-                isExternal
-                className="flex items-center gap-1 text-current"
-                href="https://nextui-docs-v2.vercel.app?utm_source=next-app-template"
-                title="nextui.org homepage"
-              >
-                <p className="text-primary">Car sell</p>
-              </Link>
-            </footer>
-          </div>
-        </Providers>
-      </body>
-    </html>
+    <AuthProvider>
+      <html lang="en">
+        <body
+          className={clsx(
+            "min-h-screen bg-[rgba(0,0,0)] text-white font-sans antialiased",
+            fontSans.variable,
+          )}
+        >
+          <Navbar />
+          <main className="flex-grow pt-4">{children}</main>
+        </body>
+      </html>
+    </AuthProvider>
   );
 }
