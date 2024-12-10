@@ -25,7 +25,11 @@ const CardItem = ({ title, subtitle, imageUrl, buttonText, link }) => {
                 <h4 className="text-white font-medium text-large">{title}</h4>
             </CardHeader>
             <CardFooter className="absolute bottom-2 left-2 z-20">
-                <Button color="primary" size="sm" onClick={() => router.push(link)}>
+                <Button
+                    color="primary"
+                    size="sm"
+                    onClick={() => router.push(`${link}?search=${encodeURIComponent(title)}`)}
+                >
                     {buttonText}
                 </Button>
             </CardFooter>
@@ -77,6 +81,7 @@ export const PopularCar = () => {
             button: "Перейти",
             link: "/carlist"
         },
+
     ];
 
     return (

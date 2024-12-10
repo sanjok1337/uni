@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation"; // Для отримання параметрів з URL
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Slider } from "@nextui-org/slider";
 import { CheckboxGroup, Checkbox } from "@nextui-org/checkbox";
-import { Image } from "@nextui-org/image";
 import { Chip } from "@nextui-org/chip";
 
 // Компонент деталей автомобіля
@@ -20,12 +19,7 @@ const CarDetails = ({ name, imageSrc, specs, price }) => {
     return (
         <div className="flex flex-col gap-5 bg-[rgba(255,255,255,0.03)] border border-white/5 p-6 rounded-[14px]">
             <p className="text-[24px] font-bold">{name}</p>
-            <Image
-                width={250}
-                alt={`${name} Image`}
-                src={imageSrc}
-                className="rounded-lg"
-            />
+            <img width={250} alt={`${name} Image`} src={imageSrc} className="rounded-lg" />
             <div className="flex flex-wrap gap-2">
                 {specs.map((spec, index) => (
                     <Chip key={index} variant="bordered" className="text-white/60">
@@ -37,11 +31,7 @@ const CarDetails = ({ name, imageSrc, specs, price }) => {
             <div className="w-full h-[1px] bg-white/5"></div>
             <div className="flex justify-between gap-4 flex-wrap items-center">
                 <p className="text-[20px] font-bold">{price}</p>
-                <Button
-                    color="primary"
-                    className="w-full py-6"
-                    onClick={handlePurchaseClick}
-                >
+                <Button color="primary" className="w-full py-6" onClick={handlePurchaseClick}>
                     Придбати
                 </Button>
             </div>
@@ -49,59 +39,48 @@ const CarDetails = ({ name, imageSrc, specs, price }) => {
     );
 };
 
-// Головний компонент
 export const CarFilterAndCard = () => {
+    const searchParams = useSearchParams(); // Отримуємо параметри пошуку з URL
+    const router = useRouter();
+    
     const carData = [
+        // Додано кілька автомобілів, змінюйте чи додавайте інші
         {
-            name: "AUDI RS6",
-            imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
-            specs: ["10 Л.", "Автоматична", "Передній привід", "Седан", "2020"],
+            name: "Audi RS6",
+            imageSrc: "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
+            specs: ["4 Л.", "Автоматична", "Передній привід", "Седан", "2020"],
             price: 115650,
         },
         {
-            name: "AUDI RS6 Avant",
-            imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
-            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
+            name: "BMW 8 Series",
+            imageSrc: "https://www.bmw.sk/content/dam/bmw/common/all-models/8-series/series-overview/bmw-8-series-gran-coupe-ms-g16.jpg",
+            specs: ["3.5 Л.", "Механічна", "Повний привід", "Купе", "2020"],
             price: 95000,
         },
         {
-            name: "AUDI RS6 Avant",
-            imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
-            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
-            price: 95000,
+            name: "Mercedes AMG GT",
+            imageSrc: "https://e7852c3a.rocketcdn.me/wp-content/uploads/2023/12/Mercedes-AMG-1400x934.jpg",
+            specs: ["3.3 Л.", "Автоматична", "Повний привід", "Купе", "2022"],
+            price: 135000,
         },
         {
-            name: "AUDI RS6 Avant",
-            imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
-            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
-            price: 95000,
+            name: "Porsche",
+            imageSrc: "https://e7852c3a.rocketcdn.me/wp-content/uploads/2023/12/Mercedes-AMG-1400x934.jpg",
+            specs: ["2.5 Л.", "Автоматична", "Повний привід", "Купе", "2022"],
+            price: 135000,
         },
         {
-            name: "AUDI RS6 Avant",
-            imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
-            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
-            price: 95000,
+            name: "Bentley",
+            imageSrc: "https://e7852c3a.rocketcdn.me/wp-content/uploads/2023/12/Mercedes-AMG-1400x934.jpg",
+            specs: ["4 Л.", "Автоматична", "Повний привід", "Купе", "2022"],
+            price: 135000,
         },
         {
-            name: "AUDI RS6 Avant",
-            imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
-            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
-            price: 95000,
+            name: "Range Rover",
+            imageSrc: "https://e7852c3a.rocketcdn.me/wp-content/uploads/2023/12/Mercedes-AMG-1400x934.jpg",
+            specs: ["5 Л.", "Автоматична", "Повний привід", "Купе", "2022"],
+            price: 135000,
         },
-        {
-            name: "AUDI RS6 Avant",
-            imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
-            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
-            price: 95000,
-        },
-       
         // Додаткові автомобілі...
     ];
 
@@ -112,8 +91,13 @@ export const CarFilterAndCard = () => {
         priceRange: [0, 200000],
         yearRange: [2000, 2024],
         engineRange: [0, 15],
-        search: "",
+        search: searchParams.get("search") || "", // Витягування марки з URL параметра
     });
+
+    useEffect(() => {
+        // Оновлюємо параметри пошуку у URL, якщо змінюється фільтр
+        router.push(`?search=${filters.search}`);
+    }, [filters.search, router]);
 
     const handleFilterChange = (key, value) => {
         setFilters((prev) => ({
@@ -160,6 +144,7 @@ export const CarFilterAndCard = () => {
                     type="text"
                     variant="bordered"
                     label="Пошук..."
+                    value={filters.search}
                     onChange={(e) => handleFilterChange("search", e.target.value)}
                 />
             </div>
@@ -223,9 +208,9 @@ export const CarFilterAndCard = () => {
                     <p>Літраж двигуна</p>
                     <Slider
                         label="Діапазон літражу"
-                        step={0.1}
+                        step={0.2}
                         minValue={0}
-                        maxValue={15}
+                        maxValue={7}
                         defaultValue={filters.engineRange}
                         onChange={(value) => handleFilterChange("engineRange", value)}
                     />
