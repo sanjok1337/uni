@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Slider } from "@nextui-org/slider";
@@ -10,6 +11,12 @@ import { Chip } from "@nextui-org/chip";
 
 // Компонент деталей автомобіля
 const CarDetails = ({ name, imageSrc, specs, price }) => {
+    const router = useRouter();
+
+    const handlePurchaseClick = () => {
+        router.push(`/cars/${name.toLowerCase().replace(/\s+/g, "-")}`);
+    };
+
     return (
         <div className="flex flex-col gap-5 bg-[rgba(255,255,255,0.03)] border border-white/5 p-6 rounded-[14px]">
             <p className="text-[24px] font-bold">{name}</p>
@@ -30,7 +37,11 @@ const CarDetails = ({ name, imageSrc, specs, price }) => {
             <div className="w-full h-[1px] bg-white/5"></div>
             <div className="flex justify-between gap-4 flex-wrap items-center">
                 <p className="text-[20px] font-bold">{price}</p>
-                <Button color="primary" className="w-full py-6">
+                <Button
+                    color="primary"
+                    className="w-full py-6"
+                    onClick={handlePurchaseClick}
+                >
                     Придбати
                 </Button>
             </div>
@@ -40,7 +51,6 @@ const CarDetails = ({ name, imageSrc, specs, price }) => {
 
 // Головний компонент
 export const CarFilterAndCard = () => {
-    // Дані автомобілів
     const carData = [
         {
             name: "AUDI RS6",
@@ -57,46 +67,54 @@ export const CarFilterAndCard = () => {
             price: 95000,
         },
         {
-            name: "AUDI A3",
+            name: "AUDI RS6 Avant",
             imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/aaf535b4d4d054137d3d24e317c3c8f9ab7cca37/a4avant2023/crop:SMART/resize:1920:1080",
-            specs: ["5 Л.", "Механічна", "Передній привід", "Хетчбек", "2019"],
-            price: 60000,
+                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
+            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
+            price: 95000,
         },
         {
-            name: "AUDI Q7",
+            name: "AUDI RS6 Avant",
             imageSrc:
-                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/a4avant2023/crop:SMART/resize:1920:823",
-            specs: ["12 Л.", "Автоматична", "Повний привід", "Позашляховик", "2021"],
-            price: 130000,
+                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
+            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
+            price: 95000,
         },
         {
-            name: "BMW X5",
+            name: "AUDI RS6 Avant",
             imageSrc:
-                "https://upload.wikimedia.org/wikipedia/commons/4/4f/2020_BMW_X5_M_Competition_3.0_F96.jpg",
-            specs: ["3 Л.", "Автоматична", "Повний привід", "Позашляховик", "2023"],
-            price: 85000,
+                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
+            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
+            price: 95000,
         },
         {
-            name: "MERCEDES S-Class",
+            name: "AUDI RS6 Avant",
             imageSrc:
-                "https://upload.wikimedia.org/wikipedia/commons/a/a2/2019_Mercedes-Benz_S-Class_400d_4MATIC.jpg",
-            specs: ["4 Л.", "Автоматична", "Повний привід", "Седан", "2022"],
-            price: 120000,
+                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
+            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
+            price: 95000,
         },
+        {
+            name: "AUDI RS6 Avant",
+            imageSrc:
+                "https://cf-cdn-v6-api.audi.at/images/11e89c4564f9bc31e2a45d69c432f6597b719cc4/e253f49a-19c4-4ab2-9eb7-d500a24fc262/crop:SMART/resize:1920:823/a4avant2023",
+            specs: ["8 Л.", "Механічна", "Повний привід", "Купе", "2018"],
+            price: 95000,
+        },
+       
+        // Додаткові автомобілі...
     ];
 
-    // Стан фільтрів
     const [filters, setFilters] = useState({
         transmission: [],
         drive: [],
         bodyType: [],
         priceRange: [0, 200000],
         yearRange: [2000, 2024],
-        search: "", // Додано поле для пошуку
+        engineRange: [0, 15],
+        search: "",
     });
 
-    // Обробка змін фільтрів
     const handleFilterChange = (key, value) => {
         setFilters((prev) => ({
             ...prev,
@@ -104,8 +122,10 @@ export const CarFilterAndCard = () => {
         }));
     };
 
-    // Фільтрування автомобілів
     const filteredCars = carData.filter((car) => {
+        const engineLitres = parseFloat(car.specs[0]);
+        const carYear = parseInt(car.specs[car.specs.length - 1], 10);
+
         const matchesSearch =
             car.name.toLowerCase().includes(filters.search.toLowerCase());
         const matchesTransmission =
@@ -117,8 +137,9 @@ export const CarFilterAndCard = () => {
         const matchesPrice =
             car.price >= filters.priceRange[0] && car.price <= filters.priceRange[1];
         const matchesYear =
-            Number(car.specs[car.specs.length - 1]) >= filters.yearRange[0] &&
-            Number(car.specs[car.specs.length - 1]) <= filters.yearRange[1];
+            carYear >= filters.yearRange[0] && carYear <= filters.yearRange[1];
+        const matchesEngine =
+            engineLitres >= filters.engineRange[0] && engineLitres <= filters.engineRange[1];
 
         return (
             matchesSearch &&
@@ -126,7 +147,8 @@ export const CarFilterAndCard = () => {
             matchesDrive &&
             matchesBodyType &&
             matchesPrice &&
-            matchesYear
+            matchesYear &&
+            matchesEngine
         );
     });
 
@@ -184,6 +206,28 @@ export const CarFilterAndCard = () => {
                         maxValue={200000}
                         defaultValue={filters.priceRange}
                         onChange={(value) => handleFilterChange("priceRange", value)}
+                    />
+                </div>
+                <div className="p-5 bg-white/5 flex flex-col gap-5 rounded-[14px]">
+                    <p>Рік випуску</p>
+                    <Slider
+                        label="Діапазон років"
+                        step={1}
+                        minValue={2000}
+                        maxValue={2024}
+                        defaultValue={filters.yearRange}
+                        onChange={(value) => handleFilterChange("yearRange", value)}
+                    />
+                </div>
+                <div className="p-5 bg-white/5 flex flex-col gap-5 rounded-[14px]">
+                    <p>Літраж двигуна</p>
+                    <Slider
+                        label="Діапазон літражу"
+                        step={0.1}
+                        minValue={0}
+                        maxValue={15}
+                        defaultValue={filters.engineRange}
+                        onChange={(value) => handleFilterChange("engineRange", value)}
                     />
                 </div>
             </div>
