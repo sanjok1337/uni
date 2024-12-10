@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 const Register: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [name, setName] = useState<string>(""); // Додаємо поле для імені
+  const [phone, setPhone] = useState<string>(""); // Додаємо поле для телефону
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
@@ -21,7 +23,7 @@ const Register: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, name, phone }), // Додаємо нові поля в запит
       });
 
       if (!response.ok) {
@@ -50,6 +52,26 @@ const Register: React.FC = () => {
       <Card style={{ maxWidth: "400px", padding: "20px" }}>
         <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Реєстрація</h1>
         <form onSubmit={handleSubmit}>
+          <Input
+            label="Ім'я"
+            placeholder="Введіть ім'я"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+            required
+          />
+          <Spacer y={1.5} />
+          <Input
+            label="Телефон"
+            placeholder="Введіть номер телефону"
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            fullWidth
+            required
+          />
+          <Spacer y={1.5} />
           <Input
             label="Email"
             placeholder="Введіть email"
