@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Input } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
 import { Slider } from "@nextui-org/slider";
 import { CheckboxGroup, Checkbox } from "@nextui-org/checkbox";
@@ -82,7 +83,7 @@ export const CarFilterAndCard = () => {
                 "https://upload.wikimedia.org/wikipedia/commons/a/a2/2019_Mercedes-Benz_S-Class_400d_4MATIC.jpg",
             specs: ["4 Л.", "Автоматична", "Повний привід", "Седан", "2022"],
             price: 120000,
-        }
+        },
     ];
 
     // Стан фільтрів
@@ -92,6 +93,7 @@ export const CarFilterAndCard = () => {
         bodyType: [],
         priceRange: [0, 200000],
         yearRange: [2000, 2024],
+        search: "", // Додано поле для пошуку
     });
 
     // Обробка змін фільтрів
@@ -104,6 +106,8 @@ export const CarFilterAndCard = () => {
 
     // Фільтрування автомобілів
     const filteredCars = carData.filter((car) => {
+        const matchesSearch =
+            car.name.toLowerCase().includes(filters.search.toLowerCase());
         const matchesTransmission =
             filters.transmission.length === 0 || filters.transmission.some((t) => car.specs.includes(t));
         const matchesDrive =
@@ -117,6 +121,7 @@ export const CarFilterAndCard = () => {
             Number(car.specs[car.specs.length - 1]) <= filters.yearRange[1];
 
         return (
+            matchesSearch &&
             matchesTransmission &&
             matchesDrive &&
             matchesBodyType &&
@@ -127,6 +132,16 @@ export const CarFilterAndCard = () => {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Пошук */}
+            <div className="col-span-4 mb-6">
+                <Input
+                    type="text"
+                    variant="bordered"
+                    label="Пошук..."
+                    onChange={(e) => handleFilterChange("search", e.target.value)}
+                />
+            </div>
+
             {/* Фільтри */}
             <div className="col-span-1">
                 <div className="p-5 bg-white/5 flex flex-col gap-5 rounded-[14px]">
