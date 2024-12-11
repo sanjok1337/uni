@@ -8,6 +8,35 @@ export default function CarPage() {
   const [configuration, setConfiguration] = useState("Стандарт");
   const [color, setColor] = useState("Чорний");
 
+  const handleOrder = async () => {
+  const order = {
+    configuration,
+    color,
+    price: configurations[configuration]["Ціна"],
+    status: "Нове"
+  };
+
+  try {
+    const response = await fetch("http://localhost:5000/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(order),
+    });
+
+    if (response.ok) {
+      alert("Замовлення успішно створено!");
+    } else {
+      const errorData = await response.json();
+      alert(`Помилка створення замовлення: ${errorData.message}`);
+    }
+  } catch (error) {
+    console.error("Помилка:", error);
+    alert("Не вдалося створити замовлення.");
+  }
+};
+
   const images = [
     'https://www.pngplay.com/wp-content/uploads/13/BMW-8-Series-Gran-Coupe-Transparent-Free-PNG.png',
     'https://rk.mb-qr.com/media/thumbnails/cards/Front-03_75LQYEt.png.860x860_q95.png',

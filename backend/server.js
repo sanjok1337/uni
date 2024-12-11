@@ -247,6 +247,26 @@ app.put("/api/user/email", (req, res) => {
   });
 });
 
+// Додавання замовлення
+app.post("/api/orders", (req, res) => {
+  const { configuration, color, price, status } = req.body;
+
+  if (!configuration || !color || !price || !status) {
+    return res.status(400).json({ message: "Всі поля повинні бути заповнені" });
+  }
+
+  const query = "INSERT INTO orders (configuration, color, price, status) VALUES (?, ?, ?, ?)";
+
+  db.execute(query, [configuration, color, price, status], (err, result) => {
+    if (err) {
+      console.error("Помилка при створенні замовлення:", err);
+      return res.status(500).json({ message: "Помилка серверу" });
+    }
+
+    res.status(201).json({ message: "Замовлення успішно створено", orderId: result.insertId });
+  });
+});
+
 // Запуск сервера
 app.listen(PORT, () => {
   console.log(`Сервер працює на http://localhost:${PORT}`);
