@@ -5,11 +5,47 @@ import Head from 'next/head';
 export default function CarPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [configuration, setConfiguration] = useState("Стандарт");
+  const [color, setColor] = useState("Чорний");
+
   const images = [
     'https://www.pngplay.com/wp-content/uploads/13/BMW-8-Series-Gran-Coupe-Transparent-Free-PNG.png',
     'https://rk.mb-qr.com/media/thumbnails/cards/Front-03_75LQYEt.png.860x860_q95.png',
     'https://www.pngplay.com/wp-content/uploads/13/Porsche-911-Background-PNG-Image.png'
   ];
+
+  const colors = ["Чорний", "Білий", "Червоний", "Синій", "Зелений"];
+  const colorCodes = {
+    "Чорний": "#000",
+    "Білий": "#fff",
+    "Червоний": "#f00",
+    "Синій": "#00f",
+    "Зелений": "#0f0"
+  };
+
+  const configurations = {
+    "Стандарт": {
+      "Тип двигуна": "Бензиновий",
+      "Салон": "Тканина",
+      "Диски": "Стандартні",
+      "Пакети": "Базовий",
+      "Ціна": 95000
+    },
+    "Спорт": {
+      "Тип двигуна": "Бензиновий, турбований",
+      "Салон": "Алькантара",
+      "Диски": "Спортивні",
+      "Пакети": "Спортивний",
+      "Ціна": 105000
+    },
+    "Люкс": {
+      "Тип двигуна": "Гібрид",
+      "Салон": "Шкіряний",
+      "Диски": "Преміум",
+      "Пакети": "Люкс",
+      "Ціна": 125000
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -59,6 +95,8 @@ export default function CarPage() {
       <div style={{ padding: '10px', borderBottom: '1px solid gray' }}>
         <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '15px', borderRadius: '10px' }}>
           <h2>BMW 8 Series Gran Coupe</h2>
+          <p>Конфігурація: {configuration}</p>
+          <p>Колір: {color}</p>
         </div>
       </div>
 
@@ -66,129 +104,79 @@ export default function CarPage() {
       <div style={{ padding: '10px' }}>
         <h2>Конфігурація</h2>
         <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-          <button
-            style={{
-              padding: '10px 20px',
-              background: 'white',
-              border: 'none',
-              color: 'black',
-              cursor: 'pointer',
-              borderRadius: '5px',
-              transition: 'background-color 0.3s, transform 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = 'lightgray'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-            onClick={() => {}}
-          >
-            Стандарт
-          </button>
-          <button
-            style={{
-              padding: '10px 20px',
-              background: 'white',
-              border: 'none',
-              color: 'black',
-              cursor: 'pointer',
-              borderRadius: '5px',
-              transition: 'background-color 0.3s, transform 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = 'lightgray'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-            onClick={() => {}}
-          >
-            Спорт
-          </button>
-          <button
-            style={{
-              padding: '10px 20px',
-              background: 'white',
-              border: 'none',
-              color: 'black',
-              cursor: 'pointer',
-              borderRadius: '5px',
-              transition: 'background-color 0.3s, transform 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = 'lightgray'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
-            onClick={() => {}}
-          >
-            Люкс
-          </button>
+          {['Стандарт', 'Спорт', 'Люкс'].map((config) => (
+            <button
+              key={config}
+              style={{
+                padding: '10px 20px',
+                background: configuration === config ? 'gray' : 'white',
+                border: 'none',
+                color: 'black',
+                cursor: 'pointer',
+                borderRadius: '5px',
+                transition: 'background-color 0.3s, transform 0.2s'
+              }}
+              onClick={() => setConfiguration(config)}
+            >
+              {config}
+            </button>
+          ))}
         </div>
 
-        <div style={{ display: 'flex', gap: '30px', alignItems: 'stretch' }}>
-          {/* Filters as text (left) */}
-          <div style={{ flex: 1, animation: 'fadeIn 1s ease-in-out' }}>
+        {/* Color Picker Section */}
+        <h3>Оберіть колір:</h3>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '10px' }}>
+          {colors.map((clr) => (
             <div
+              key={clr}
+              onClick={() => setColor(clr)}
               style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                padding: '15px',
-                borderRadius: '10px',
-                height: '100%',
+                width: '40px',
+                height: '40px',
+                background: colorCodes[clr],
+                borderRadius: '50%',
+                border: color === clr ? '3px solid white' : '2px solid gray',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
-              <h3>Фільтри:</h3>
-              <ul>
-                <li>Колір</li>
-                <li>Тип двигуна</li>
-                <li>Матеріал салону</li>
-                <li>Диски</li>
-                <li>Пакети</li>
-              </ul>
+              {color === clr && <span style={{ color: 'white' }}>✔</span>}
             </div>
-          </div>
+          ))}
+        </div>
 
-          {/* Filters with checkboxes/sliders (right) */}
-          <div style={{ flex: 1, animation: 'fadeIn 1s ease-in-out' }}>
-            <div
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                padding: '15px',
-                borderRadius: '10px',
-                height: '100%',
-              }}
-            >
-              <h3>Налаштувати конфігурацію:</h3>
-              <form>
-                <div style={{ marginBottom: '10px' }}>
-                  <label>
-                    <input type="checkbox" /> Шкіряний салон
-                  </label>
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                  <label>
-                    <input type="checkbox" /> Спортивна підвіска
-                  </label>
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                  <label>
-                    <input type="checkbox" /> Легкосплавні диски
-                  </label>
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                  <label>Потужність двигуна:</label>
-                  <input type="range" min="200" max="800" step="50" />
-                </div>
-                <div style={{ marginBottom: '10px' }}>
-                  <label>Економія пального:</label>
-                  <input type="range" min="5" max="15" step="0.5" />
-                </div>
-              </form>
-            </div>
-          </div>
+        {/* Details Section */}
+        <div style={{ marginTop: '20px', background: 'rgba(255, 255, 255, 0.1)', padding: '15px', borderRadius: '10px' }}>
+          <h3>Деталі конфігурації:</h3>
+          <ul>
+            <li>Тип двигуна: {configurations[configuration]["Тип двигуна"]}</li>
+            <li>Салон: {configurations[configuration]["Салон"]}</li>
+            <li>Диски: {configurations[configuration]["Диски"]}</li>
+            <li>Пакети: {configurations[configuration]["Пакети"]}</li>
+          </ul>
+        </div>
+
+        {/* Order Button and Price */}
+        <div style={{ textAlign: 'center', marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '20px' }}>
+          <button
+            style={{
+              padding: '15px 30px',
+              background: 'green',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              fontSize: '16px'
+            }}
+            onClick={() => alert(`Замовлено конфігурацію: ${configuration}, Колір: ${color}, Ціна: ${configurations[configuration]["Ціна"]}€`)}
+          >
+            Замовити
+          </button>
+          <span style={{ fontSize: '20px', fontWeight: 'bold' }}>{configurations[configuration]["Ціна"]}€</span>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 }
