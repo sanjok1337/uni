@@ -13,7 +13,13 @@ const CarDetails = ({ name, imageSrc, specs, price }) => {
     const router = useRouter();
 
     const handlePurchaseClick = () => {
-        router.push(`/cars/${name.toLowerCase().replace(/\s+/g, "-")}`);
+        
+        if (name === "BMW M8") {
+            router.push(`/cars`); 
+        } else {
+            
+            router.push(`/cars/${name.toLowerCase().replace(/\s+/g, '-')}`);
+        }
     };
 
     return (
@@ -52,7 +58,7 @@ export const CarFilterAndCard = () => {
             price: 115650,
         },
         {
-            name: "BMW 8 Series",
+            name: "BMW M8",
             specs: ["3.5 Л.", "Механічна", "Повний привід", "Купе", "2020"],
             imageSrc: "https://www.pngplay.com/wp-content/uploads/13/BMW-8-Series-Gran-Coupe-Transparent-Free-PNG.png",
             price: 95000,
