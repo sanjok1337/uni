@@ -46,10 +46,18 @@ const Register: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
-        background: "#f5f5f5",
+        background: "#121212", // Темний фон
+        color: "#ffffff", // Світлий текст
       }}
     >
-      <Card style={{ maxWidth: "400px", padding: "20px" }}>
+      <Card
+        style={{
+          maxWidth: "400px",
+          padding: "20px",
+          background: "#1e1e1e", // Темний фон для картки
+          color: "#ffffff",
+        }}
+      >
         <h1 style={{ textAlign: "center", marginBottom: "20px" }}>Реєстрація</h1>
         <form onSubmit={handleSubmit}>
           <Input

@@ -41,21 +41,18 @@ export const Navbar = () => {
         </Link>
       </NavbarContent>
 
-      {/* Каталог */}
-      <NavbarContent className="basis-1/5" justify="start">
+      <NavbarContent className="basis-3/5" justify="end">
         <NavbarItem>
           <Button onClick={() => router.push("/carlist")}>Каталог</Button>
         </NavbarItem>
-      </NavbarContent>
 
-      <NavbarContent className="basis-1/5" justify="end">
         {isAuthenticated ? (
           <>
             <NavbarItem>
               <Link href="/profile" className="text-white">Профіль</Link>
             </NavbarItem>
             <NavbarItem>
-              <Button onClick={handleLogout}>Вийти</Button>
+              <span className="cursor-pointer text-white" onClick={handleLogout}>Вийти</span>
             </NavbarItem>
           </>
         ) : (
