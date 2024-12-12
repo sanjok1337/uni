@@ -1,10 +1,11 @@
-"use client";
+"use client"
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { log } from "console";
 
 const ProfilePage = () => {
   const [user, setUser] = useState<{ email: string; name: string; phone: string } | null>(null);
-  const [orders, setOrders] = useState<any[]>([]); // Стан для замовлень
+  const [orders, setOrders] = useState([]); // Стан для замовлень
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
@@ -15,7 +16,7 @@ const ProfilePage = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
+  useEffect(() =>  {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -50,19 +51,16 @@ const ProfilePage = () => {
         });
 
       // Отримуємо замовлення користувача
-      fetch("http://localhost:5000/api/orders", {
+        fetch("http://localhost:5000/api/orders", {
         method: "GET",
         headers: {
-          "Authorization": token,
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.message) {
-            console.error(data.message);
-          } else {
-            setOrders(data.orders || []); // Встановлюємо замовлення в стан
-          }
+          
+          setOrders(data || []);
         })
         .catch((error) => {
           console.error("Помилка при завантаженні замовлень:", error);
@@ -163,7 +161,11 @@ const ProfilePage = () => {
         console.error("Помилка при оновленні email:", error);
       });
   };
-
+  console.log(orders)
+  const normalizedOrders = Array.isArray(orders)
+  ? orders
+  : Object.values(orders || {});
+  
   return (
     <div className="min-h-screen bg-[rgba(255,255,255,0.02)] text-white p-6">
       {successMessage && (
@@ -253,15 +255,15 @@ const ProfilePage = () => {
         />
         <button
           onClick={handleChangePassword}
-          className="px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition"
+          className="mt-3 px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition"
         >
-          Змінити пароль
+          Зберегти пароль
         </button>
       </div>
 
-      {/* Редагування Email */}
+      {/* Редагування email */}
       <div className="mt-6 bg-[rgba(255,255,255,0.1)] p-4 rounded-lg max-w-4xl mx-auto">
-        <h2 className="text-lg font-semibold mb-2">Змінити Email</h2>
+        <h2 className="text-lg font-semibold mb-2">Змінити email</h2>
         <input
           type="email"
           value={newEmail}
@@ -271,29 +273,34 @@ const ProfilePage = () => {
         />
         <button
           onClick={handleChangeEmail}
-          className="px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition"
+          className="mt-3 px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition"
         >
-          Змінити Email
+          Зберегти email
         </button>
       </div>
 
-      {/* Замовлення користувача */}
+      {/* Замовлення */}
       <div className="mt-6 bg-[rgba(255,255,255,0.1)] p-4 rounded-lg max-w-4xl mx-auto">
-        <h2 className="text-lg font-semibold mb-2">Ваші замовлення</h2>
-        {orders.length > 0 ? (
-          <div className="space-y-4">
-            {orders.map((order, index) => (
-              <div key={index} className="bg-white text-black p-4 rounded-lg">
-                <p><strong>Номер замовлення:</strong> {order.id}</p>
-                <p><strong>Дата:</strong> {new Date(order.date).toLocaleDateString()}</p>
-                <p><strong>Товари:</strong> {order.items.join(", ")}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p>У вас немає замовлень.</p>
-        )}
-      </div>
+  <h2 className="text-lg font-semibold mb-2">Ваші замовлення</h2>
+  {Array.isArray(normalizedOrders) && normalizedOrders.length > 0 ? (
+    <ul>
+      {normalizedOrders.map((order: any) => (
+        <li key={order.id} className="mb-4 p-3 bg-[rgba(255,255,255,0.05)] rounded-lg shadow">
+          <p><strong>Номер замовлення:</strong> {order.id}</p>
+          <p><strong>Колір:</strong> {order.color}</p>
+          <p><strong>Конфігурація:</strong> {order.configuration}</p>
+          <p><strong>Ціна:</strong> {order.price} грн</p>
+          <p><strong>Статус:</strong> {order.status}</p>
+          <p><strong>Дата створення:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>Empty</p>
+  )}
+  
+</div>
+
     </div>
   );
 };

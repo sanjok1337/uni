@@ -208,52 +208,78 @@ app.put("/api/user/password", (req, res) => {
   });
 });
 
-// Додавання замовлення
-app.post("/api/orders", (req, res) => {
-  const { configuration, color, price, status } = req.body;
+app.post('/api/orders', async (req, res) => {
+  const token = (req.headers.authorization || '').replace(/Bearer\s?/, '')
+
+  if (!token) {
+    return res.status(403).json({ message: 'Токен не надано' })
+  }
+
+  let userId
+
+  jwt.verify(token, 'secret_key', (err, decoded) => {
+    if (err) {
+      console.error('Помилка при перевірці токену:', err)
+      return res.status(403).json({ message: 'Невірний токен' })
+    }
+
+    userId = decoded.id
+  })
+
+  const { configuration, color, price, status } = req.body
 
   // Перевірка на наявність всіх необхідних полів
   if (!configuration || !color || !price || !status) {
-    return res.status(400).json({ message: "Всі поля повинні бути заповнені" });
+    return res.status(400).json({ message: 'Всі поля повинні бути заповнені' })
   }
 
   // Запит на вставку нового замовлення в базу
-  const query = "INSERT INTO orders (configuration, color, price, status) VALUES (?, ?, ?, ?)";
+  const query = 'INSERT INTO orders (configuration, color, price, status, userId ) VALUES (?, ?, ?, ?, ? )'
 
-  db.execute(query, [configuration, color, price, status], (err, result) => {
+  db.execute(query, [configuration, color, price, status, userId], (err, result) => {
     if (err) {
-      console.error("Помилка при створенні замовлення:", err);
-      return res.status(500).json({ message: "Помилка серверу" });
+      console.error('Помилка при створенні замовлення:', err)
+      return res.status(500).json({ message: 'Помилка серверу' })
     }
 
-    res.status(201).json({ message: "Замовлення успішно створено", orderId: result.insertId });
-  });
-});
+    res.status(201).json({ message: 'Замовлення успішно створено', order: result })
+  })
+})
 
 // Отримання замовлення за ID
-app.get("/api/orders/:id", (req, res) => {
-  const orderId = req.params.id;
+app.get('/api/orders', (req, res) => {
+  const token = (req.headers.authorization || '').replace(/Bearer\s?/, '')
 
-  if (!orderId) {
-    return res.status(400).json({ message: "ID замовлення не вказано" });
+  if (!token) {
+    return res.status(403).json({ message: 'Токен не надано' })
   }
 
-  const query = "SELECT * FROM orders WHERE id = ?";
-  
-  db.execute(query, [orderId], (err, results) => {
+  let userId
+
+  jwt.verify(token, 'secret_key', (err, decoded) => {
     if (err) {
-      console.error("Помилка при отриманні замовлення:", err);
-      return res.status(500).json({ message: "Помилка серверу" });
+      console.error('Помилка при перевірці токену:', err)
+      return res.status(403).json({ message: 'Невірний токен' })
     }
 
-    if (results.length === 0) {
-      return res.status(404).json({ message: "Замовлення не знайдено" });
+    userId = decoded.id
+  })
+
+  const query = 'SELECT * FROM orders WHERE userId = ?'
+
+  db.execute(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Помилка при отриманні замовлення:', err)
+      return res.status(500).json({ message: 'Помилка серверу' })
     }
 
-    const order = results[0];
-    res.status(200).json(order);
-  });
-});
+    if (results.length === 0) return res.status(404).json({ message: 'Замовлення не знайдено' })
+
+      res.status(200).json(results)
+
+    
+  })
+})
 
 app.listen(PORT, () => {
   console.log(`Сервер працює на порту ${PORT}`);
