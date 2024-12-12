@@ -1,18 +1,18 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
   const [user, setUser] = useState<{ email: string; name: string; phone: string } | null>(null);
+  const [orders, setOrders] = useState<any[]>([]); // Стан для замовлень
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false); // Статус редагування
+  const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [newPassword, setNewPassword] = useState(""); // Для нового пароля
-  const [oldPassword, setOldPassword] = useState(""); // Для старого пароля
-  const [newEmail, setNewEmail] = useState(""); // Для нового email
-  const [successMessage, setSuccessMessage] = useState(""); // Повідомлення про успішне оновлення
+  const [newPassword, setNewPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -48,10 +48,28 @@ const ProfilePage = () => {
           console.error("Помилка при завантаженні профілю:", error);
           setLoading(false);
         });
+
+      // Отримуємо замовлення користувача
+      fetch("http://localhost:5000/api/orders", {
+        method: "GET",
+        headers: {
+          "Authorization": token,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message) {
+            console.error(data.message);
+          } else {
+            setOrders(data.orders || []); // Встановлюємо замовлення в стан
+          }
+        })
+        .catch((error) => {
+          console.error("Помилка при завантаженні замовлень:", error);
+        });
     }
   }, [router]);
 
-  // Обробка зміни даних профілю
   const handleSaveProfile = () => {
     const token = localStorage.getItem("token");
 
@@ -78,9 +96,9 @@ const ProfilePage = () => {
             name: name,
             phone: phone,
           });
-          setIsEditing(false); // Вимикаємо режим редагування
-          setSuccessMessage("Профіль успішно оновлено!"); // Встановлюємо повідомлення
-          setTimeout(() => setSuccessMessage(""), 3000); // Скидаємо повідомлення через 3 секунди
+          setIsEditing(false);
+          setSuccessMessage("Профіль успішно оновлено!");
+          setTimeout(() => setSuccessMessage(""), 3000);
         }
       })
       .catch((error) => {
@@ -88,7 +106,6 @@ const ProfilePage = () => {
       });
   };
 
-  // Обробка зміни пароля
   const handleChangePassword = () => {
     const token = localStorage.getItem("token");
 
@@ -118,7 +135,6 @@ const ProfilePage = () => {
       });
   };
 
-  // Обробка зміни email
   const handleChangeEmail = () => {
     const token = localStorage.getItem("token");
 
@@ -163,7 +179,7 @@ const ProfilePage = () => {
       ) : (
         user && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Ліва колонка: Фотографія профілю */}
+            {/* Профіль користувача */}
             <div className="bg-[rgba(255,255,255,0.1)] p-4 rounded-lg flex flex-col items-center transition-all transform hover:bg-gradient-to-r hover:from-[rgba(255,255,255,0.3)] hover:to-[rgba(255,255,255,0.1)] hover:scale-105">
               <img
                 src="https://via.placeholder.com/100"
@@ -174,7 +190,7 @@ const ProfilePage = () => {
               <button className="mt-3 px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition">Змінити фотографію</button>
             </div>
 
-            {/* Права колонка: Особиста інформація */}
+            {/* Особиста інформація */}
             <div className="bg-[rgba(255,255,255,0.1)] p-4 rounded-lg flex flex-col justify-center items-center transition-all transform hover:bg-gradient-to-r hover:from-[rgba(255,255,255,0.3)] hover:to-[rgba(255,255,255,0.1)] hover:scale-105">
               <h2 className="text-lg font-semibold mb-1">Особиста інформація</h2>
               <div className="w-full text-center">
@@ -218,50 +234,65 @@ const ProfilePage = () => {
         )
       )}
 
-      {/* Форма для зміни пароля */}
-      <div className="mt-4 bg-[rgba(255,255,255,0.1)] p-4 rounded-lg max-w-4xl mx-auto">
+      {/* Редагування пароля */}
+      <div className="mt-6 bg-[rgba(255,255,255,0.1)] p-4 rounded-lg max-w-4xl mx-auto">
         <h2 className="text-lg font-semibold mb-2">Змінити пароль</h2>
-        <div>
-          <label>Старий пароль:</label>
-          <input
-            type="password"
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-            className="bg-transparent p-2 text-white mb-2"
-          />
-        </div>
-        <div>
-          <label>Новий пароль:</label>
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="bg-transparent p-2 text-white mb-2"
-          />
-        </div>
+        <input
+          type="password"
+          value={oldPassword}
+          onChange={(e) => setOldPassword(e.target.value)}
+          placeholder="Старий пароль"
+          className="bg-transparent p-2 text-white mb-2"
+        />
+        <input
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          placeholder="Новий пароль"
+          className="bg-transparent p-2 text-white mb-2"
+        />
         <button
           onClick={handleChangePassword}
-          className="mt-3 px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition"
+          className="px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition"
         >
-          Зберегти пароль
+          Змінити пароль
         </button>
       </div>
 
-      {/* Форма для зміни email */}
-      <div className="mt-4 bg-[rgba(255,255,255,0.1)] p-4 rounded-lg max-w-4xl mx-auto">
+      {/* Редагування Email */}
+      <div className="mt-6 bg-[rgba(255,255,255,0.1)] p-4 rounded-lg max-w-4xl mx-auto">
         <h2 className="text-lg font-semibold mb-2">Змінити Email</h2>
         <input
           type="email"
           value={newEmail}
           onChange={(e) => setNewEmail(e.target.value)}
+          placeholder="Новий email"
           className="bg-transparent p-2 text-white mb-2"
         />
         <button
           onClick={handleChangeEmail}
-          className="mt-5 px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition ml-2"
+          className="px-3 py-1 bg-white text-black rounded-lg shadow hover:bg-gray-200 transition"
         >
-          Зберегти Email
+          Змінити Email
         </button>
+      </div>
+
+      {/* Замовлення користувача */}
+      <div className="mt-6 bg-[rgba(255,255,255,0.1)] p-4 rounded-lg max-w-4xl mx-auto">
+        <h2 className="text-lg font-semibold mb-2">Ваші замовлення</h2>
+        {orders.length > 0 ? (
+          <div className="space-y-4">
+            {orders.map((order, index) => (
+              <div key={index} className="bg-white text-black p-4 rounded-lg">
+                <p><strong>Номер замовлення:</strong> {order.id}</p>
+                <p><strong>Дата:</strong> {new Date(order.date).toLocaleDateString()}</p>
+                <p><strong>Товари:</strong> {order.items.join(", ")}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>У вас немає замовлень.</p>
+        )}
       </div>
     </div>
   );

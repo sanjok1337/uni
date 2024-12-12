@@ -7,35 +7,36 @@ export default function CarPage() {
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [configuration, setConfiguration] = useState("Стандарт");
   const [color, setColor] = useState("Чорний");
+  const [error, setError] = useState<string | null>(null);
 
   const handleOrder = async () => {
-  const order = {
-    configuration,
-    color,
-    price: configurations[configuration]["Ціна"],
-    status: "Нове"
-  };
+    const order = {
+      configuration,
+      color,
+      price: configurations[configuration]["Ціна"],
+      status: "Нове"
+    };
 
-  try {
-    const response = await fetch("http://localhost:5000/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(order),
-    });
+    try {
+      const response = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(order),
+      });
 
-    if (response.ok) {
-      alert("Замовлення успішно створено!");
-    } else {
-      const errorData = await response.json();
-      alert(`Помилка створення замовлення: ${errorData.message}`);
+      if (response.ok) {
+        alert("Замовлення успішно створено!");
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Не вдалося створити замовлення.");
+      }
+    } catch (error) {
+      console.error("Помилка:", error);
+      setError("Не вдалося створити замовлення.");
     }
-  } catch (error) {
-    console.error("Помилка:", error);
-    alert("Не вдалося створити замовлення.");
-  }
-};
+  };
 
   const images = [
     'https://www.pngplay.com/wp-content/uploads/13/BMW-8-Series-Gran-Coupe-Transparent-Free-PNG.png',
@@ -199,13 +200,20 @@ export default function CarPage() {
               cursor: 'pointer',
               fontSize: '16px'
             }}
-            onClick={() => alert(`Замовлено конфігурацію: ${configuration}, Колір: ${color}, Ціна: ${configurations[configuration]["Ціна"]}€`)}
+            onClick={handleOrder}
           >
             Замовити
           </button>
           <span style={{ fontSize: '20px', fontWeight: 'bold' }}>{configurations[configuration]["Ціна"]}€</span>
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
+          {error}
+        </div>
+      )}
     </div>
   );
 }

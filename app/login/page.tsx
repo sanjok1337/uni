@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input, Button, Spacer, Card } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 
@@ -8,12 +8,23 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
+  
   const router = useRouter();
+
+  // Перевірка, чи є токен при завантаженні сторінки
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      // Якщо токен є, перенаправляємо на головну сторінку
+      router.push("/");
+    }
+  }, [router]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
@@ -32,12 +43,19 @@ const Login: React.FC = () => {
       const data = await response.json();
       console.log("Успішна авторизація:", data);
 
+      // Зберігаємо токен та userId у localStorage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.userId); // Зберігаємо userId
 
+      console.log("Токен збережено:", data.token); // Перевірка
+
+      // Перенаправляємо на головну сторінку після успішного логіну
       router.push("/");
     } catch (err: any) {
       console.error("Помилка авторизації:", err);
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,8 +102,8 @@ const Login: React.FC = () => {
             style={{ color: "#ffffff" }}
           />
           <Spacer y={1.5} />
-          <Button type="submit" fullWidth>
-            Увійти
+          <Button type="submit" fullWidth disabled={loading}>
+            {loading ? "Завантаження..." : "Увійти"}
           </Button>
           <Spacer y={1} />
           <Button
